@@ -16,7 +16,7 @@ const { Header, Sider, Content } = Layout;
 export default function NewsSandBox() {
   return (
     <Layout>
-      <SideMenu></SideMenu>
+      <SideMenu name="首页"></SideMenu>
       {/* JSX属性书写：class属性改为className */}
       <Layout className="site-layout">
         <TopHeader></TopHeader>

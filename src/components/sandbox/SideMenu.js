@@ -13,6 +13,7 @@ import {
   MenuUnfoldOutlined,
   PieChartOutlined,
 } from '@ant-design/icons';
+import { withRouter  } from 'react-router-dom';
 import axios from 'axios'
 import { Layout, Menu, theme } from 'antd';
 const { Header, Sider, Content } = Layout;
@@ -20,13 +21,13 @@ const { Header, Sider, Content } = Layout;
 
 
 
-export default function SideMenu() {
+function SideMenu(props) {
   const [menu, setMenu] = useState([])
   //第一次渲染画面
   useEffect(() => {
     axios.get("http://localhost:3000/rights?_embed=children").then(res => {
       setMenu(res.data)
-      console.log(menu)
+      console.log(props)
     })
   }, [])
 
@@ -56,11 +57,20 @@ export default function SideMenu() {
       }
     })
     console.log(arr)
+
     return arr
   }
  
+  const onClick = (e) => {
+    console.log(props)
+    props.history.push(e.key)
+    
+  }
+
   return (
+    
         <Sider trigger={null} collapsible >
+           首页信息-<span>{props.name}</span>
         <div className="logo" />
         <Menu
           theme="dark"
@@ -69,7 +79,10 @@ export default function SideMenu() {
           defaultSelectedKeys={['1']}
           //items	菜单内容	类型：ItemType[]  
           items={transform(menu)}
+          onClick={onClick}
         />
       </Sider>
     )
 }
+
+export default withRouter(SideMenu)
