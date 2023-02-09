@@ -5,7 +5,7 @@ function App() {
     <div>
       
       <IndexRouter></IndexRouter> 
-      <Button type="primary">Button</Button>
+      
     </div>
   )
 }

@@ -27,7 +27,6 @@ function SideMenu(props) {
   useEffect(() => {
     axios.get("http://localhost:3000/rights?_embed=children").then(res => {
       setMenu(res.data)
-      console.log(props)
     })
   }, [])
 
@@ -56,27 +55,27 @@ function SideMenu(props) {
         }
       }
     })
-    console.log(arr)
-
     return arr
   }
  
   const onClick = (e) => {
     console.log(props)
     props.history.push(e.key)
-    
+    const openKeys=['/'+ props.location.pathname.split('/')[1]]
+    console.log(openKeys)
   }
+
+  const selectKeys = [props.location.pathname]
 
   return (
     
         <Sider trigger={null} collapsible >
-           首页信息-<span>{props.name}</span>
         <div className="logo" />
         <Menu
           theme="dark"
           mode="inline"
           //defaultSelectedKeys 类型：string[]
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={selectKeys}
           //items	菜单内容	类型：ItemType[]  
           items={transform(menu)}
           onClick={onClick}
