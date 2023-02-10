@@ -5,10 +5,9 @@ import axios from 'axios'
 
 const { confirm } = Modal;
 export default function RightList() {
+    
     const [dataSource, setdataSource] = useState(
-        [
-
-        ]
+        []
     )
 
     useEffect(() => {
@@ -18,6 +17,7 @@ export default function RightList() {
 
     }, [])
 
+    //表格列设置
     const columns = [
         {
             title: 'ID',
@@ -48,6 +48,7 @@ export default function RightList() {
         }
     ];
 
+    //设置switch开关方法
     const switchMethod = (item) => {
         item.pagepermisson = item.pagepermisson === 1 ? 0 : 1
         //checked重新渲染 //为什么一定要展开dataSource //用setState该方法会更新state，然后引起视图更新
@@ -63,7 +64,7 @@ export default function RightList() {
         }
     }
 
-    //item拿到的是当前的这一项对象 
+    //设置switch开关方法 //item拿到的是当前的这一项对象 
     const confirmMethod = (item) => {
         confirm({
             title: 'Do you Want to delete these items?',
@@ -78,7 +79,7 @@ export default function RightList() {
         });
     }
 
-
+    //删除
     const delectMethod = (item) => {
         if (item.grade === 1) {
             setdataSource(dataSource.filter(data => data.id !== item.id))

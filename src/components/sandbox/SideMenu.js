@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 
   UploadOutlined,
@@ -13,7 +13,7 @@ import {
   MenuUnfoldOutlined,
   PieChartOutlined,
 } from '@ant-design/icons';
-import { withRouter  } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import axios from 'axios'
 import { Layout, Menu, theme } from 'antd';
 const { Header, Sider, Content } = Layout;
@@ -31,57 +31,60 @@ function SideMenu(props) {
   }, [])
 
   //convertObj为一个方法
-  const convertObj = (label, key, icon, children) =>{
-    return {label, key, icon, children}
+  const convertObj = (label, key, icon, children) => {
+    return { label, key, icon, children }
   }
 
+  //映射对象
   const iconList = {
-      "/home":<UserOutlined />,
-      "/user-manage": <UserOutlined />,
-      "/user-manage/list": <UserOutlined />,
-      "/right-manage": <UserOutlined />,
-      "/right-manage/role/list": <UserOutlined />,
-      "/right-manage/right/list": <UserOutlined />
-      //.......
+    "/home": <UserOutlined />,
+    "/user-manage": <UserOutlined />,
+    "/user-manage/list": <UserOutlined />,
+    "/right-manage": <UserOutlined />,
+    "/right-manage/role/list": <UserOutlined />,
+    "/right-manage/right/list": <UserOutlined />
+    //.......
   }
+
+  //选择符合条件的数组返回
   function transform(list) {
-    let arr =[]
+    let arr = []
     list.forEach((item) => {
       if (item.children && item.children.length !== 0) {
-        arr.push(convertObj(item.title,item.key, iconList[item.key],  transform(item.children)))
+        arr.push(convertObj(item.title, item.key, iconList[item.key], transform(item.children)))
       } else {
         if (item.pagepermisson) {
-          arr.push(convertObj(item.title,item.key, iconList[item.key]))
+          arr.push(convertObj(item.title, item.key, iconList[item.key]))
         }
       }
     })
     return arr
   }
- 
+
+  //页面跳转方法
   const onClick = (e) => {
     console.log(props)
     props.history.push(e.key)
-    const openKeys=['/'+ props.location.pathname.split('/')[1]]
+    const openKeys = ['/' + props.location.pathname.split('/')[1]]
     console.log(openKeys)
   }
 
   const selectKeys = [props.location.pathname]
 
   return (
-    
-        <Sider trigger={null} collapsible >
-        <div className="logo" />
-        <Menu
-          theme="dark"
-          mode="inline"
-          //defaultSelectedKeys 类型：string[]
-          defaultSelectedKeys={selectKeys}
-          //items	菜单内容	类型：ItemType[]  
-          items={transform(menu)}
-          onClick={onClick}
-        />
-      </Sider>
-    )
+    <Sider trigger={null} collapsible >
+      <div className="logo" />
+      <Menu
+        theme="dark"
+        mode="inline"
+        //defaultSelectedKeys 类型：string[]
+        defaultSelectedKeys={selectKeys}
+        //items	菜单内容	类型：ItemType[]  
+        items={transform(menu)}
+        onClick={onClick}
+      />
+    </Sider>
+  )
 }
 
 export default withRouter(SideMenu)
