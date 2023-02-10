@@ -40,14 +40,30 @@ export default function RightList() {
             render: (item) => {
                return <div>
                    <Button danger shape="circle" icon={<DeleteOutlined/>} onClick={() => confirmMethod(item)} />
-                   <Popover content={<Switch defaultChecked onChange={null} /* checked={item.pagepermisson} *//>} title="页面配置项">
+                   <Popover content={<Switch checked={item.pagepermisson} onChange={()=>switchMethod(item)}/>} title="页面配置项">
                     <Button type="primary" shape="circle" icon={<EditOutlined/>}  disabled={item.pagepermisson===undefined}/>
                    </Popover>
                 </div>
             }
         }
       ];
-      //拿到的是当前的这一项对象 
+
+      const  switchMethod = (item)=>{
+        item.pagepermisson = item.pagepermisson===1?0:1
+        //checked重新渲染 //为什么一定要展开dataSource //用setState该方法会更新state，然后引起视图更新
+        setdataSource([...dataSource])
+        if(item.grade===1){
+            axios.patch(`http://localhost:3000/rights/${item.id}`,{
+                pagepermisson:item.pagepermisson
+            })
+        }else{
+            axios.patch(`http://localhost:3000/children/${item.id}`,{
+                pagepermisson:item.pagepermisson
+            })
+        }
+      }
+
+      //item拿到的是当前的这一项对象 
       const confirmMethod = (item) => {
         confirm({
             title: 'Do you Want to delete these items?',
