@@ -6,6 +6,7 @@ const { confirm } = Modal
 
 export default function RoleList() {
     const [dataSource, setdataSource] = useState([])
+    const [currentId, setcurrentId] = useState(0)
     //设置对话框打开属性
     const [isModalOpen, setIsModalOpen] = useState(false);
     //树形控件属性值
@@ -19,7 +20,23 @@ export default function RoleList() {
     };
     //设置对话框ok方法
     const handleOk = () => {
+        //console.log(currentRights,currentId)
         setIsModalOpen(false);
+
+        setdataSource(dataSource.map(item=>{
+            if(item.id===currentId){
+                return {
+                    ...item,
+                    rights:currentRights
+                }
+            }
+            return item
+        }))
+        
+
+        axios.patch(`http://localhost:3000/roles/${currentId}`,{
+             rights:currentRights
+         })
     };
     //设置对话框取消方法
     const handleCancel = () => {
@@ -62,6 +79,7 @@ export default function RoleList() {
                     <Button type="primary" shape="circle" icon={<EditOutlined />} onClick={() => {
                         showModal()
                         setcurrentRights(item.rights)
+                        setcurrentId(item.id)
                     }} />
                 </div>
             }
@@ -91,9 +109,9 @@ export default function RoleList() {
         axios.delete(`http://localhost:3000/roles/${item.id}`)
     }
 
-    //点击复选框触发
+    //点击复选框触发 （默认参数 checkedKeys, info）
     const onCheck = (checkKeys)=>{
-        console.log(checkKeys)
+        console.log()
         setcurrentRights(checkKeys)
     }
 
