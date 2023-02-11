@@ -79,7 +79,7 @@ export default function UserList() {
         confirm({
             title: '你确定要删除?',
             icon: <ExclamationCircleOutlined />,
-            // content: 'Some descriptions',
+            // content: 'Some descriptions', 
             onOk() {
                 //   console.log('OK');
                 deleteMethod(item)
