@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button, Table, Modal, Switch, Form, Input, Select } from 'antd'
 import axios from 'axios'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import UserForm from '../../../components/user-manage/UserForm'
 const { confirm } = Modal
 const { Option } = Select;
 
@@ -74,6 +75,10 @@ export default function UserList() {
         }
     ];
 
+    const validateMessages = {
+        required: "'${name}' 是必选字段",
+        // ...
+      };
 
     const confirmMethod = (item) => {
         confirm({
@@ -123,8 +128,9 @@ export default function UserList() {
                 }}
             >
 
-                <Form
+                {/* <Form
                     layout="vertical"
+                    validateMessages={validateMessages}
                 >
                     <Form.Item
                         name="username"
@@ -166,7 +172,9 @@ export default function UserList() {
                             }
                         </Select>
                     </Form.Item>
-                </Form>
+                </Form> */}
+
+                <UserForm regionList={regionList} roleList={roleList}/>
             </Modal>
         </div>
     )
