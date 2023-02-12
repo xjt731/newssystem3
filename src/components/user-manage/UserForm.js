@@ -2,12 +2,14 @@ import React, { forwardRef,useState } from 'react'
  import {Form,Input,Select} from 'antd'
  const {Option}  = Select
  //props接收父组件数据，forwardRef包裹的函数
-const UserForm = (props) => {
+const UserForm = forwardRef((props,ref) => {
+    //禁用下拉列表状态
      const [isDisabled, setisDisabled] = useState(false)
      return (
         <Form
         layout="vertical"
         //validateMessages={validateMessages}
+        ref={ref}
     >
         <Form.Item
             name="username"
@@ -26,9 +28,9 @@ const UserForm = (props) => {
         <Form.Item
             name="region"
             label="区域"
-            rules={[{ required: true, message: 'Please input the title of collection!' }]}
+            rules={isDisabled?[]:[{ required: true, message: 'Please input the title of collection!' }]}
         >
-            <Select>
+            <Select disabled={isDisabled}>
                 {
                     props.regionList.map(item =>
                         <Option value={item.value} key={item.id}>{item.title}</Option>
@@ -39,9 +41,21 @@ const UserForm = (props) => {
         <Form.Item
             name="roleId"
             label="角色"
+            //如果是超级管理员则不开启检查
             rules={[{ required: true, message: 'Please input the title of collection!' }]}
         >
-            <Select>
+            {/* 每次select被选择，拿到的value值是选项编号。1为超级管理员 */}
+            <Select onChange={(value)=>{
+                if(value===1){
+                    setisDisabled(true)
+                    //ref自己组建里面页可以用 //ref输出：{current: {…}}
+                    ref.current.setFieldsValue({
+                        region:''
+                    })
+                }else{
+                    setisDisabled(false)
+                }
+            }}>
                 {
                     props.roleList.map(item =>
                         <Option value={item.id} key={item.id}>{item.roleName}</Option>
@@ -51,6 +65,6 @@ const UserForm = (props) => {
         </Form.Item>
     </Form>
      )
- }
+ })
 
  export default UserForm

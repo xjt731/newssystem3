@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button, Table, Modal, Switch, Form, Input, Select } from 'antd'
 import axios from 'axios'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
@@ -14,6 +14,10 @@ export default function UserList() {
     const [roleList, setroleList] = useState([])
     //显示Region列表对话框
     const [regionList, setregionList] = useState([])
+    //useRef拿到子组件属性
+    const addForm = useRef()
+    
+
     useEffect(() => {
         axios.get("http://localhost:3000/users?_expand=role").then(res => {
             const list = res.data
@@ -75,10 +79,7 @@ export default function UserList() {
         }
     ];
 
-    const validateMessages = {
-        required: "'${name}' 是必选字段",
-        // ...
-      };
+
 
     const confirmMethod = (item) => {
         confirm({
@@ -99,7 +100,7 @@ export default function UserList() {
     const deleteMethod = (item) => {
         // console.log(item)
         // 当前页面同步状态 + 后端同步
-        
+
 
     }
 
@@ -124,7 +125,15 @@ export default function UserList() {
                     setisAddVisible(false)
                 }}
                 onOk={() => {
-                    console.log("add")
+                    console.log(addForm.current)
+                        //validateFields 返回示例
+                        addForm.current.validateFields()
+                        .then((values) => {
+                           console.log(values)
+                        })
+                        .catch((errorInfo) => {
+                            console.log(errorInfo)
+                        });
                 }}
             >
 
@@ -174,7 +183,7 @@ export default function UserList() {
                     </Form.Item>
                 </Form> */}
 
-                <UserForm regionList={regionList} roleList={roleList}/>
+                <UserForm ref={addForm} regionList={regionList} roleList={roleList} />
             </Modal>
         </div>
     )
