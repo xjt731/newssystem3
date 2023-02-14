@@ -66,7 +66,7 @@ export default function UserList() {
             dataIndex: 'roleState',
             //为什么default要加item？
             render: (roleState, item) => {
-                return <Switch checked={roleState} disabled={item.default}></Switch>
+                return <Switch checked={roleState} disabled={item.default} onChange={()=>handleChange(item)}></Switch>
             }
         },
         {
@@ -81,7 +81,15 @@ export default function UserList() {
         }
     ];
 
+    const handleChange = (item)=>{
+         //console.log(item)
+        item.roleState = !item.roleState
+        setdataSource([...dataSource])
 
+        axios.patch(`http://localhost:3000/users/${item.id}`,{
+            roleState:item.roleState
+        })
+    }
 
     const confirmMethod = (item) => {
         confirm({
@@ -108,6 +116,7 @@ export default function UserList() {
 
     }
 
+    /
     const addFormOK = () => {
         addForm.current.validateFields().then(value => {
             // console.log(value)
@@ -121,7 +130,11 @@ export default function UserList() {
                 "default": false,
             }).then(res => {
                 console.log(res.data)
-                setdataSource([...dataSource, res.data])
+                setdataSource([...dataSource,{
+                    ...res.data,
+                    role:roleList.filter(item=>item.id===value.roleId)[0]
+                }])//不拆分拿不到角色名称
+                //setdataSource([...dataSource, res.data])
             })
         }).catch(err => {
             console.log(err)
