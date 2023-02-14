@@ -80,6 +80,24 @@
       "roleState": true,
       "default": false,
       "id": 9
+    },
+    {
+      "username": "司马海味2",
+      "password": "f d s",
+      "region": "北美洲",
+      "roleId": 3,
+      "roleState": true,
+      "default": false,
+      "id": 10
+    },
+    {
+      "username": "司马海味233",
+      "password": "123",
+      "region": "南美洲",
+      "roleId": 2,
+      "roleState": true,
+      "default": false,
+      "id": 11
     }
   ],
   "roles": [
