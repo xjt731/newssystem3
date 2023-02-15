@@ -1,67 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Table, Modal, Switch, Form, Input, Select } from 'antd'
+import { Button, Table, Modal, Switch } from 'antd'
 import axios from 'axios'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import UserForm from '../../../components/user-manage/UserForm'
 const { confirm } = Modal
-const { Option } = Select;
+
 export default function UserList() {
     const [dataSource, setdataSource] = useState([])
-    const [isUpdateVisible, setisUpdateVisible] = useState(false)
-    //显示Modal对话框
     const [isAddVisible, setisAddVisible] = useState(false)
-    //显示Role列表对话框
+    const [isUpdateVisible, setisUpdateVisible] = useState(false)
     const [roleList, setroleList] = useState([])
-    //显示Region列表对话框
-     const [regionList, setregionList] = useState([])
-     //useRef拿到子组件属性
-     const addForm = useRef()
+    const [regionList, setregionList] = useState([])
 
-     useEffect(() => {
-         axios.get("http://localhost:3000/users?_expand=role").then(res => {
+    const [isUpdateDisabled, setisUpdateDisabled] = useState(false)
+    const addForm = useRef(null)
+    const updateForm = useRef(null)
+    useEffect(() => {
+        axios.get("http://localhost:3000/users?_expand=role").then(res => {
             const list = res.data
             setdataSource(list)
         })
     }, [])
+
     useEffect(() => {
         axios.get("http://localhost:3000/regions").then(res => {
             const list = res.data
             setregionList(list)
         })
     }, [])
+
     useEffect(() => {
         axios.get("http://localhost:3000/roles").then(res => {
             const list = res.data
             setroleList(list)
         })
     }, [])
+
     const columns = [
         {
             title: '区域',
             dataIndex: 'region',
             render: (region) => {
-                return region === "" ? '全球' : region
+                return <b>{region === "" ? '全球' : region}</b>
             }
         },
-         {
-             title: '角色名称',
-             dataIndex: 'role',
-             //UserList.js:55 Uncaught TypeError: Cannot read properties of undefined (reading 'roleName')
-             render: (role) => {
-                 return role.roleName
-                 //return role?.roleName//如果没有就不读？
-             }
-         },
-         {
+        {
+            title: '角色名称',
+            dataIndex: 'role',
+            render: (role) => {
+                return role?.roleName
+            }
+        },
+        {
             title: "用户名",
             dataIndex: 'username'
         },
         {
             title: "用户状态",
             dataIndex: 'roleState',
-            //为什么default要加item？
             render: (roleState, item) => {
-                return <Switch checked={roleState} disabled={item.default}></Switch>
+                return <Switch checked={roleState} disabled={item.default} onChange={()=>handleChange(item)}></Switch>
             }
         },
         {
@@ -69,16 +67,42 @@ export default function UserList() {
             render: (item) => {
                 return <div>
                     <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => confirmMethod(item)} disabled={item.default} />
-                    <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} />
+
+                    <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} onClick={()=>handleUpdate(item)}/>
                 </div>
             }
         }
     ];
+
+    const handleUpdate = (item)=>{
+        setTimeout(()=>{
+            setisUpdateVisible(true)
+            if(item.roleId===1){
+                //禁用
+                setisUpdateDisabled(true)
+            }else{
+                //取消禁用
+                setisUpdateDisabled(false)
+            }
+            updateForm.current.setFieldsValue(item)
+        },0)
+    }
+
+    const handleChange = (item)=>{
+        // console.log(item)
+        item.roleState = !item.roleState
+        setdataSource([...dataSource])
+
+        axios.patch(`http://localhost:3000/users/${item.id}`,{
+            roleState:item.roleState
+        })
+    }
+
     const confirmMethod = (item) => {
         confirm({
             title: '你确定要删除?',
             icon: <ExclamationCircleOutlined />,
-            // content: 'Some descriptions', 
+            // content: 'Some descriptions',
             onOk() {
                 //   console.log('OK');
                 deleteMethod(item)
@@ -87,44 +111,49 @@ export default function UserList() {
                 //   console.log('Cancel');
             },
         });
+
     }
     //删除
-     const deleteMethod = (item) => {
-         // console.log(item)
-         // 当前页面同步状态 + 后端同步
-         setdataSource(dataSource.filter(data => data.id !== item.id))
+    const deleteMethod = (item) => {
+        // console.log(item)
+        // 当前页面同步状态 + 后端同步
 
-         axios.delete(`http://localhost:3000/users/${item.id}`)
+        setdataSource(dataSource.filter(data=>data.id!==item.id))
 
-     }
+        axios.delete(`http://localhost:3000/users/${item.id}`)
+    }
 
-     const addFormOK = () => {
-         addForm.current.validateFields().then(value => {
-             // console.log(value)
+    const addFormOK = () => {
+        addForm.current.validateFields().then(value => {
+            // console.log(value)
 
-             setisAddVisible(false)
+            setisAddVisible(false)
 
-             //post到后端，生成id，再设置 datasource, 方便后面的删除和更新
-             axios.post(`http://localhost:3000/users`, {
-                 ...value,
-                 "roleState": true,
-                 "default": false,
-             }).then(res => {
-                 console.log(res.data)
-                 setdataSource([...dataSource,{
+            addForm.current.resetFields()
+            //post到后端，生成id，再设置 datasource, 方便后面的删除和更新
+            axios.post(`http://localhost:3000/users`, {
+                ...value,
+                "roleState": true,
+                "default": false,
+            }).then(res=>{
+                console.log(res.data)
+                setdataSource([...dataSource,{
                     ...res.data,
                     role:roleList.filter(item=>item.id===value.roleId)[0]
                 }])
-                 //setdataSource([...dataSource, res.data])
-             })
-         }).catch(err => {
-             console.log(err)
-         })
-     }
+            })
+        }).catch(err => {
+            console.log(err)
+        })
+    }
 
-     return (
-         <div>
-             <Button type="primary" onClick={() => {
+    const updateFormOK = ()=>{
+
+    }
+
+    return (
+        <div>
+            <Button type="primary" onClick={() => {
                 setisAddVisible(true)
             }}>添加用户</Button>
             <Table dataSource={dataSource} columns={columns}
@@ -133,20 +162,35 @@ export default function UserList() {
                 }}
                 rowKey={item => item.id}
             />
+
             <Modal
                 open={isAddVisible}
                 title="添加用户"
                 okText="确定"
                 cancelText="取消"
-                 onCancel={() => {
-                     setisAddVisible(false)
-                 }}
-                 onOk={() => addFormOK()}
-             >
-
-                 
-                <UserForm ref={addForm} regionList={regionList} roleList={roleList} />
+                onCancel={() => {
+                    setisAddVisible(false)
+                }}
+                onOk={() => addFormOK()}
+            >
+                <UserForm regionList={regionList} roleList={roleList} ref={addForm}></UserForm>
             </Modal>
+
+            <Modal
+                open={isUpdateVisible}
+                title="更新用户"
+                okText="更新"
+                cancelText="取消"
+                onCancel={() => {
+                    setisUpdateVisible(false)
+                    setisUpdateDisabled(!isUpdateDisabled)
+                }}
+                onOk={() => updateFormOK()}
+            >
+                 {/* 向子组件User-Form传递数据 ref={addForm} */}
+                <UserForm regionList={regionList} roleList={roleList} ref={updateForm} isUpdateDisabled={isUpdateDisabled}></UserForm>
+            </Modal>
+
         </div>
     )
 }
