@@ -1,25 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { Layout, Dropdown, Menu, Avatar } from 'antd';
 import {
-  MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  MenuFoldOutlined,
+  UserOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
-const { Header, Sider, Content } = Layout;
+
+const { Header } = Layout;
 
 export default function TopHeader() {
-    const [collapsed] = useState(true)
-    return (
-        <Header 
-          //style在书写的时候要注意它接收的值是个对象
-          style={{
-            padding: 0,
-            
-          }}
-        >
-          {collapsed?<MenuUnfoldOutlined/>:<MenuFoldOutlined/>}
-        </Header>
-    )
+  const [collapsed, setCollapsed] = useState(false)
+  const changeCollapsed = () => {
+    setCollapsed(!collapsed)
+  }
+
+  const menu = (
+    <Menu>
+      <Menu.Item>
+        超级管理员
+      </Menu.Item>
+      <Menu.Item danger>退出</Menu.Item>
+    </Menu>
+  );
+
+  return (
+    <Header className="site-layout-background" style={{ padding: '0 16px' }}>
+      {
+        collapsed ? <MenuUnfoldOutlined onClick={changeCollapsed} /> : <MenuFoldOutlined onClick={changeCollapsed} />
+      }
+
+      <div style={{ float: "right" }}>
+        <span>欢迎admin回来</span>
+        <Dropdown overlay={menu}>
+          <Avatar size="large" icon={<UserOutlined />} />
+        </Dropdown>
+      </div>
+    </Header>
+
+  )
 }
