@@ -5,41 +5,36 @@ import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-de
 import UserForm from '../../../components/user-manage/UserForm'
 const { confirm } = Modal
 const { Option } = Select;
-
 export default function UserList() {
     const [dataSource, setdataSource] = useState([])
+    const [isUpdateVisible, setisUpdateVisible] = useState(false)
     //显示Modal对话框
     const [isAddVisible, setisAddVisible] = useState(false)
     //显示Role列表对话框
     const [roleList, setroleList] = useState([])
     //显示Region列表对话框
-    const [regionList, setregionList] = useState([])
-    //useRef拿到子组件属性
-    const addForm = useRef()
+     const [regionList, setregionList] = useState([])
+     //useRef拿到子组件属性
+     const addForm = useRef()
 
-
-    useEffect(() => {
-        axios.get("http://localhost:3000/users?_expand=role").then(res => {
+     useEffect(() => {
+         axios.get("http://localhost:3000/users?_expand=role").then(res => {
             const list = res.data
             setdataSource(list)
-
         })
     }, [])
-
     useEffect(() => {
         axios.get("http://localhost:3000/regions").then(res => {
             const list = res.data
             setregionList(list)
         })
     }, [])
-
     useEffect(() => {
         axios.get("http://localhost:3000/roles").then(res => {
             const list = res.data
             setroleList(list)
         })
     }, [])
-
     const columns = [
         {
             title: '区域',
@@ -48,16 +43,16 @@ export default function UserList() {
                 return region === "" ? '全球' : region
             }
         },
-        {
-            title: '角色名称',
-            dataIndex: 'role',
-            //UserList.js:55 Uncaught TypeError: Cannot read properties of undefined (reading 'roleName')
-            render: (role) => {
-                return role.roleName
-                //return role?.roleName//如果没有就不读？
-            }
-        },
-        {
+         {
+             title: '角色名称',
+             dataIndex: 'role',
+             //UserList.js:55 Uncaught TypeError: Cannot read properties of undefined (reading 'roleName')
+             render: (role) => {
+                 return role.roleName
+                 //return role?.roleName//如果没有就不读？
+             }
+         },
+         {
             title: "用户名",
             dataIndex: 'username'
         },
@@ -74,15 +69,11 @@ export default function UserList() {
             render: (item) => {
                 return <div>
                     <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => confirmMethod(item)} disabled={item.default} />
-
                     <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} />
                 </div>
             }
         }
     ];
-
-
-
     const confirmMethod = (item) => {
         confirm({
             title: '你确定要删除?',
@@ -96,41 +87,44 @@ export default function UserList() {
                 //   console.log('Cancel');
             },
         });
-
     }
     //删除
-    const deleteMethod = (item) => {
-        // console.log(item)
-        // 当前页面同步状态 + 后端同步
-        setdataSource(dataSource.filter(data => data.id !== item.id))
+     const deleteMethod = (item) => {
+         // console.log(item)
+         // 当前页面同步状态 + 后端同步
+         setdataSource(dataSource.filter(data => data.id !== item.id))
 
-        axios.delete(`http://localhost:3000/users/${item.id}`)
+         axios.delete(`http://localhost:3000/users/${item.id}`)
 
-    }
+     }
 
-    const addFormOK = () => {
-        addForm.current.validateFields().then(value => {
-            // console.log(value)
+     const addFormOK = () => {
+         addForm.current.validateFields().then(value => {
+             // console.log(value)
 
-            setisAddVisible(false)
+             setisAddVisible(false)
 
-            //post到后端，生成id，再设置 datasource, 方便后面的删除和更新
-            axios.post(`http://localhost:3000/users`, {
-                ...value,
-                "roleState": true,
-                "default": false,
-            }).then(res => {
-                console.log(res.data)
-                setdataSource([...dataSource, res.data])
-            })
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+             //post到后端，生成id，再设置 datasource, 方便后面的删除和更新
+             axios.post(`http://localhost:3000/users`, {
+                 ...value,
+                 "roleState": true,
+                 "default": false,
+             }).then(res => {
+                 console.log(res.data)
+                 setdataSource([...dataSource,{
+                    ...res.data,
+                    role:roleList.filter(item=>item.id===value.roleId)[0]
+                }])
+                 //setdataSource([...dataSource, res.data])
+             })
+         }).catch(err => {
+             console.log(err)
+         })
+     }
 
-    return (
-        <div>
-            <Button type="primary" onClick={() => {
+     return (
+         <div>
+             <Button type="primary" onClick={() => {
                 setisAddVisible(true)
             }}>添加用户</Button>
             <Table dataSource={dataSource} columns={columns}
@@ -139,64 +133,18 @@ export default function UserList() {
                 }}
                 rowKey={item => item.id}
             />
-
             <Modal
                 open={isAddVisible}
                 title="添加用户"
                 okText="确定"
                 cancelText="取消"
-                onCancel={() => {
-                    setisAddVisible(false)
-                }}
-                onOk={() => addFormOK()}
-            >
+                 onCancel={() => {
+                     setisAddVisible(false)
+                 }}
+                 onOk={() => addFormOK()}
+             >
 
-                {/* <Form
-                    layout="vertical"
-                    validateMessages={validateMessages}
-                >
-                    <Form.Item
-                        name="username"
-                        label="用户名"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="password"
-                        label="密码"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="region"
-                        label="区域"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Select>
-                            {
-                                regionList.map(item =>
-                                    <Option value={item.value} key={item.id}>{item.title}</Option>
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="roleId"
-                        label="角色"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Select>
-                            {
-                                roleList.map(item =>
-                                    <Option value={item.id} key={item.id}>{item.roleName}</Option>
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                </Form> */}
-
+                 
                 <UserForm ref={addForm} regionList={regionList} roleList={roleList} />
             </Modal>
         </div>
