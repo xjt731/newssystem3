@@ -1,28 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Table, Modal, Switch, Form, Input, Select } from 'antd'
+import { Button, Table, Modal, Switch } from 'antd'
 import axios from 'axios'
 import { DeleteOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import UserForm from '../../../components/user-manage/UserForm'
 const { confirm } = Modal
-const { Option } = Select;
 
 export default function UserList() {
     const [dataSource, setdataSource] = useState([])
-    //显示Modal对话框
     const [isAddVisible, setisAddVisible] = useState(false)
-    //显示Role列表对话框
+    const [isUpdateVisible, setisUpdateVisible] = useState(false)
     const [roleList, setroleList] = useState([])
-    //显示Region列表对话框
     const [regionList, setregionList] = useState([])
-    //useRef拿到子组件属性
-    const addForm = useRef()
 
-
+    const [isUpdateDisabled, setisUpdateDisabled] = useState(false)
+    const addForm = useRef(null)
+    const updateForm = useRef(null)
     useEffect(() => {
         axios.get("http://localhost:3000/users?_expand=role").then(res => {
             const list = res.data
             setdataSource(list)
-
         })
     }, [])
 
@@ -45,16 +41,14 @@ export default function UserList() {
             title: '区域',
             dataIndex: 'region',
             render: (region) => {
-                return region === "" ? '全球' : region
+                return <b>{region === "" ? '全球' : region}</b>
             }
         },
         {
             title: '角色名称',
             dataIndex: 'role',
-            //UserList.js:55 Uncaught TypeError: Cannot read properties of undefined (reading 'roleName')
             render: (role) => {
-                return role.roleName
-                //return role?.roleName//如果没有就不读？
+                return role?.roleName
             }
         },
         {
@@ -64,7 +58,6 @@ export default function UserList() {
         {
             title: "用户状态",
             dataIndex: 'roleState',
-            //为什么default要加item？
             render: (roleState, item) => {
                 return <Switch checked={roleState} disabled={item.default} onChange={()=>handleChange(item)}></Switch>
             }
@@ -75,14 +68,28 @@ export default function UserList() {
                 return <div>
                     <Button danger shape="circle" icon={<DeleteOutlined />} onClick={() => confirmMethod(item)} disabled={item.default} />
 
-                    <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} />
+                    <Button type="primary" shape="circle" icon={<EditOutlined />} disabled={item.default} onClick={()=>handleUpdate(item)}/>
                 </div>
             }
         }
     ];
 
+    const handleUpdate = (item)=>{
+        setTimeout(()=>{
+            setisUpdateVisible(true)
+            if(item.roleId===1){
+                //禁用
+                setisUpdateDisabled(true)
+            }else{
+                //取消禁用
+                setisUpdateDisabled(false)
+            }
+            updateForm.current.setFieldsValue(item)
+        },0)
+    }
+
     const handleChange = (item)=>{
-         //console.log(item)
+        // console.log(item)
         item.roleState = !item.roleState
         setdataSource([...dataSource])
 
@@ -95,7 +102,7 @@ export default function UserList() {
         confirm({
             title: '你确定要删除?',
             icon: <ExclamationCircleOutlined />,
-            // content: 'Some descriptions', 
+            // content: 'Some descriptions',
             onOk() {
                 //   console.log('OK');
                 deleteMethod(item)
@@ -110,35 +117,38 @@ export default function UserList() {
     const deleteMethod = (item) => {
         // console.log(item)
         // 当前页面同步状态 + 后端同步
-        setdataSource(dataSource.filter(data => data.id !== item.id))
+
+        setdataSource(dataSource.filter(data=>data.id!==item.id))
 
         axios.delete(`http://localhost:3000/users/${item.id}`)
-
     }
 
-    /
     const addFormOK = () => {
         addForm.current.validateFields().then(value => {
             // console.log(value)
 
             setisAddVisible(false)
 
+            addForm.current.resetFields()
             //post到后端，生成id，再设置 datasource, 方便后面的删除和更新
             axios.post(`http://localhost:3000/users`, {
                 ...value,
                 "roleState": true,
                 "default": false,
-            }).then(res => {
+            }).then(res=>{
                 console.log(res.data)
                 setdataSource([...dataSource,{
                     ...res.data,
                     role:roleList.filter(item=>item.id===value.roleId)[0]
-                }])//不拆分拿不到角色名称
-                //setdataSource([...dataSource, res.data])
+                }])
             })
         }).catch(err => {
             console.log(err)
         })
+    }
+
+    const updateFormOK = ()=>{
+
     }
 
     return (
@@ -163,55 +173,24 @@ export default function UserList() {
                 }}
                 onOk={() => addFormOK()}
             >
-
-                {/* <Form
-                    layout="vertical"
-                    validateMessages={validateMessages}
-                >
-                    <Form.Item
-                        name="username"
-                        label="用户名"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="password"
-                        label="密码"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="region"
-                        label="区域"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Select>
-                            {
-                                regionList.map(item =>
-                                    <Option value={item.value} key={item.id}>{item.title}</Option>
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                    <Form.Item
-                        name="roleId"
-                        label="角色"
-                        rules={[{ required: true, message: 'Please input the title of collection!' }]}
-                    >
-                        <Select>
-                            {
-                                roleList.map(item =>
-                                    <Option value={item.id} key={item.id}>{item.roleName}</Option>
-                                )
-                            }
-                        </Select>
-                    </Form.Item>
-                </Form> */}
-
-                <UserForm ref={addForm} regionList={regionList} roleList={roleList} />
+                <UserForm regionList={regionList} roleList={roleList} ref={addForm}></UserForm>
             </Modal>
+
+            <Modal
+                open={isUpdateVisible}
+                title="更新用户"
+                okText="更新"
+                cancelText="取消"
+                onCancel={() => {
+                    setisUpdateVisible(false)
+                    setisUpdateDisabled(!isUpdateDisabled)
+                }}
+                onOk={() => updateFormOK()}
+            >
+                 {/* 向子组件User-Form传递数据 ref={addForm} */}
+                <UserForm regionList={regionList} roleList={roleList} ref={updateForm} isUpdateDisabled={isUpdateDisabled}></UserForm>
+            </Modal>
+
         </div>
     )
 }
