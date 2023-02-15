@@ -7,14 +7,17 @@ const { confirm } = Modal
 
 export default function UserList() {
     const [dataSource, setdataSource] = useState([])
+    
     const [isAddVisible, setisAddVisible] = useState(false)
     const [isUpdateVisible, setisUpdateVisible] = useState(false)
     const [roleList, setroleList] = useState([])
     const [regionList, setregionList] = useState([])
+    const [current, setcurrent] = useState(null)
 
     const [isUpdateDisabled, setisUpdateDisabled] = useState(false)
     const addForm = useRef(null)
     const updateForm = useRef(null)
+    
     useEffect(() => {
         axios.get("http://localhost:3000/users?_expand=role").then(res => {
             const list = res.data
@@ -40,6 +43,25 @@ export default function UserList() {
         {
             title: '区域',
             dataIndex: 'region',
+            filters: [
+                ...regionList.map(item=>({
+                    text:item.title,
+                    value:item.value
+                })),
+                {
+                    text:"全球",
+                    value:"全球"
+                }    
+
+            ],
+
+            onFilter:(value,item)=>{
+                if(value==="全球"){
+                    return item.region===""
+                }
+                return item.region===value
+            },
+          
             render: (region) => {
                 return <b>{region === "" ? '全球' : region}</b>
             }
@@ -86,6 +108,8 @@ export default function UserList() {
             }
             updateForm.current.setFieldsValue(item)
         },0)
+
+        setcurrent(item)
     }
 
     const handleChange = (item)=>{
@@ -148,7 +172,24 @@ export default function UserList() {
     }
 
     const updateFormOK = ()=>{
+        updateForm.current.validateFields().then(value => {
+            // console.log(value)
+            setisUpdateVisible(false)
 
+            setdataSource(dataSource.map(item=>{
+                if(item.id===current.id){
+                    return {
+                        ...item,
+                        ...value,
+                        role:roleList.filter(data=>data.id===value.roleId)[0]
+                    }
+                }
+                return item
+            }))
+            setisUpdateDisabled(!isUpdateDisabled)
+
+            axios.patch(`http://localhost:3000/users/${current.id}`,value)
+        })
     }
 
     return (
@@ -187,7 +228,7 @@ export default function UserList() {
                 }}
                 onOk={() => updateFormOK()}
             >
-                 {/* 向子组件User-Form传递数据 ref={addForm} */}
+                {/* 向子组件User-Form传递数据 ref={addForm} */}
                 <UserForm regionList={regionList} roleList={roleList} ref={updateForm} isUpdateDisabled={isUpdateDisabled}></UserForm>
             </Modal>
 
