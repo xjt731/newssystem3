@@ -9,16 +9,21 @@ import {withRouter} from 'react-router-dom'
 
 const { Header } = Layout;
 
+
+
 function TopHeader(props) {
   const [collapsed, setCollapsed] = useState(false)
   const changeCollapsed = () => {
     setCollapsed(!collapsed)
   }
 
+  //嵌套解构
+  const {role:{roleName},username} = JSON.parse(localStorage.getItem("token"))  //(localStorage.getItem("token") 输出：{"username":"admin","password":"123","region":"",...} //JSON.parse(localStorage.getItem("token") 转为对象
+
   const menu = (
     <Menu>
       <Menu.Item>
-        超级管理员
+        {roleName}
       </Menu.Item>
       <Menu.Item danger onClick={() => {
         localStorage.removeItem("token")
@@ -35,7 +40,7 @@ function TopHeader(props) {
       }
 
       <div style={{ float: "right" }}>
-        <span>欢迎admin回来</span>
+        <span>欢迎{username}回来</span>
         <Dropdown overlay={menu}>
           <Avatar size="large" icon={<UserOutlined />} />
         </Dropdown>
