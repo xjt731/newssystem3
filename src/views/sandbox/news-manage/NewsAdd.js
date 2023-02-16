@@ -16,10 +16,10 @@ export default function NewsAdd() {
     const handleNext = () => {
         if(current===0){
             NewsForm.current.validateFields().then(res=>{
-                console.log(res)
+                //console.log(res)
                 setCurrent(current + 1)
             }).catch(error=>{
-                console.log(error)
+                //console.log(error)
             })
         }else{
             setCurrent(current + 1)
@@ -76,8 +76,9 @@ export default function NewsAdd() {
             </div>
 
             <div className={current === 1 ? '' : style.active}>
-                <NewsEditor >
-
+                <NewsEditor getContent={(value)=>{
+                    console.log(value)
+                }}>
                 </NewsEditor>
             </div>
             <div className={current === 2 ? '' : style.active}>3333</div>

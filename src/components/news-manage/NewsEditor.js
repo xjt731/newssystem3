@@ -4,12 +4,24 @@ import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html'
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-export default function NewsEditor() {
+export default function NewsEditor(props) {
 
-    
+    const [editorState, setEditorState] = useState("")
     return (
         <div>
-            <Editor /> 
+            <Editor 
+                editorState={editorState}
+                toolbarClassName="toolbarClassName"
+                wrapperClassName="wrapperClassName"
+                editorClassName="editorClassName"
+                onEditorStateChange={(editorState)=>setEditorState(editorState)} //不写这行无法输入
+                onBlur={()=>{
+                    console.log(editorState.getCurrentContent()) //editorState.getCurrentContent() 输出：<p>打撒</p>
+
+
+                    props.getContent(draftToHtml(convertToRaw(editorState.getCurrentContent())))
+                }}
+            /> 
         </div>
     )
 }
