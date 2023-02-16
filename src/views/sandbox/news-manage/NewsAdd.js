@@ -76,8 +76,8 @@ export default function NewsAdd() {
             </div>
 
             <div className={current === 1 ? '' : style.active}>
-                <NewsEditor getContent={(value)=>{
-                    console.log(value)
+                <NewsEditor getContent={(value)=>{ //子传父的值
+                    console.log(value) //value 输出：<p>电风扇</p>
                 }}>
                 </NewsEditor>
             </div>
