@@ -2,6 +2,7 @@ import React, { useEffect, useState,useRef } from 'react'
 import {  Steps, Button, Form, Input, Select } from 'antd'
 import axios from 'axios'
 import style from './News.module.css'
+import NewsEditor from '../../../components/news-manage/NewsEditor';
 export default function NewsAdd() {
     const {Option} = Select;
     const { Step } = Steps;
@@ -32,7 +33,7 @@ export default function NewsAdd() {
     //取值给下拉框用
     useEffect(()=>{
         axios.get("http://localhost:3000/categories").then(res=>{
-             console.log(res.data)
+            //console.log(res.data)
             setCategoryList(res.data)
         })
     },[])
@@ -74,7 +75,11 @@ export default function NewsAdd() {
                 </Form>
             </div>
 
-            <div className={current === 1 ? '' : style.active}>22222</div>
+            <div className={current === 1 ? '' : style.active}>
+                <NewsEditor >
+
+                </NewsEditor>
+            </div>
             <div className={current === 2 ? '' : style.active}>3333</div>
 
             <div style={{ marginTop: "50px" }}>
