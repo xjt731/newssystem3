@@ -14,6 +14,7 @@ import AuditList from '../../views/sandbox/audit-manage/AuditList'
  import Published from '../../views/sandbox/publish-manage/Published'
  import Sunset from '../../views/sandbox/publish-manage/Sunset'
  import NewsPreview from '../../views/sandbox/news-manage/NewsPreview'
+ import NewsUpdate from '../../views/sandbox/news-manage/NewsUpdate'
  import axios from 'axios'
 
  const LocalRouterMap = {
@@ -30,6 +31,7 @@ import AuditList from '../../views/sandbox/audit-manage/AuditList'
     "/publish-manage/published":Published,
     "/publish-manage/sunset":Sunset,
     "/news-manage/preview/:id":NewsPreview,
+    "/news-manage/update/:id":NewsUpdate,
  }
 
  export default function NewsRouter() {

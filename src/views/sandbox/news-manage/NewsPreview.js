@@ -21,7 +21,7 @@ export default function NewsPreview(props) {
                 newsInfo && <div>
 
                     <PageHeader
-                        onBack={() => window.history.back()}
+                       onBack={()=>props.history.goBack()}
                         title={newsInfo.title}
                         subTitle={newsInfo.category.title}
                     >
