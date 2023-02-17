@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {  Descriptions } from 'antd';
+import { Descriptions } from 'antd';
 import { PageHeader } from '@ant-design/pro-layout';
 import moment from 'moment'
 import axios from 'axios';
@@ -15,13 +15,14 @@ export default function NewsPreview(props) {
 
     const auditList = ["未审核", '审核中', '已通过', '未通过']
     const publishList = ["未发布", '待发布', '已上线', '已下线']
+    const colorList = ["black","orange","green","red"]
     return (
         <div>
             {
                 newsInfo && <div>
 
                     <PageHeader
-                       onBack={()=>props.history.goBack()}
+                        onBack={() => props.history.goBack()}
                         title={newsInfo.title}
                         subTitle={newsInfo.category.title}
                     >
@@ -32,8 +33,8 @@ export default function NewsPreview(props) {
                                 newsInfo.publishTime ? moment(newsInfo.publishTime).format("YYYY/MM/DD HH:mm:ss") : "-"
                             }</Descriptions.Item>
                             <Descriptions.Item label="区域">{newsInfo.region}</Descriptions.Item>
-                            <Descriptions.Item label="审核状态" ><span style={{ color: "red" }}>{auditList[newsInfo.auditState]}</span></Descriptions.Item>
-                            <Descriptions.Item label="发布状态" ><span style={{ color: "red" }}>{publishList[newsInfo.publishState]}</span></Descriptions.Item>
+                            <Descriptions.Item label="审核状态" ><span style={{ color: colorList[newsInfo.auditState] }}>{auditList[newsInfo.auditState]}</span></Descriptions.Item>
+                            <Descriptions.Item label="发布状态" ><span style={{ color: colorList[newsInfo.auditState] }}>{publishList[newsInfo.publishState]}</span></Descriptions.Item>
                             <Descriptions.Item label="访问数量">{newsInfo.view}</Descriptions.Item>
                             <Descriptions.Item label="点赞数量">{newsInfo.star}</Descriptions.Item>
                             <Descriptions.Item label="评论数量">0</Descriptions.Item>
@@ -42,10 +43,10 @@ export default function NewsPreview(props) {
                     </PageHeader>
 
                     <div dangerouslySetInnerHTML={{
-                        __html:newsInfo.content
+                        __html: newsInfo.content
                     }} style={{
-                        margin:"0 24px",
-                        border:"1px solid gray"
+                        margin: "0 24px",
+                        border: "1px solid gray"
                     }}>
                     </div>
                 </div>
