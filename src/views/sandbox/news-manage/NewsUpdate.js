@@ -71,17 +71,10 @@ export default function NewsUpdate(props) {
 
     const handleSave = (auditState) => {
 
-        axios.post('http://localhost:3000/news', {
-            ...formInfo,
-            "content": content,
-            "region": User.region?User.region:"全球",
-            "author": User.username,
-            "roleId": User.roleId,
-            "auditState": auditState,
-            "publishState": 0,
-            "createTime": Date.now(),
-            "star": 0,
-            "view": 0,
+        axios.patch(`http://localhost:3000/news/${props.match.params.id}`, {
+             ...formInfo,
+             "content": content,
+             "auditState": auditState,
             // "publishTime": 0
         }).then(res=>{
             props.history.push(auditState===0?'/news-manage/draft':'/audit-manage/list')
