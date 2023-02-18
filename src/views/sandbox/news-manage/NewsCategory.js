@@ -43,7 +43,7 @@ export default function NewsCategory() {
         {
             title: '栏目名称',
             dataIndex: 'title',
-            onCell: (record) => ({  //渲染着段onCell，才是可编辑的
+            onCell: (record) => ({  //渲染着段onCell，才是可编辑的 //record修改之后的值 //onCell=onBlur
                 record,
                 editable: true,
                 dataIndex: 'title',
