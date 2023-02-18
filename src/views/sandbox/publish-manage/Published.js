@@ -2,15 +2,18 @@ import NewsPublish from '../../../components/publish-manage/NewsPublish'
 import usePublish from '../../../components/publish-manage/usePublish'
 import {Button} from 'antd'
 
-export default function Unpublished() {
-    // 1=== 待发布的
-    const {dataSource,handlePublish} = usePublish(1)
+export default function Published() {
+    // 2=== 已发布的
+    //结构大对象
+    const {dataSource,handleSunset} = usePublish(2)
 
     return (
         <div>
-            <NewsPublish dataSource={dataSource} button={(id)=><Button type="primary" onClick={()=>handlePublish(id)}>
-                发布
-            </Button>} ></NewsPublish>
+            <NewsPublish dataSource={dataSource} button={(id)=><Button danger onClick={()=>handleSunset(id)}>
+                下线
+            </Button>}>
+
+            </NewsPublish>
         </div>
     )
 }

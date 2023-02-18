@@ -24,9 +24,9 @@ export default function NewsPublish(props) {
         },
         {
             title: "操作",
-            render: (item) => {
-                return <div>
-                    {props.button(item.id)}
+            render: (item) => {//通过button传进来： <NewsPublish dataSource={dataSource} button={(id)=><Button danger onClick={()=>handleSunset(id)}>
+                return <div> 
+                    {props.button(item.id)} 
                 </div>
             }
         }
