@@ -72,7 +72,7 @@ function SideMenu(props) {
   const selectKeys = [props.location.pathname]
 
   return (
-    <Sider trigger={null} collapsible >
+    <Sider trigger={null} collapsible collapsed={true}>
       <div className="logo" />
       <Menu
         theme="dark"

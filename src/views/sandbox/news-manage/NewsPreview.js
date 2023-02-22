@@ -42,7 +42,7 @@ export default function NewsPreview(props) {
                         </Descriptions>
                     </PageHeader>
 
-                    <div dangerouslySetInnerHTML={{
+                    <div dangerouslySetInnerHTML={{ //dangerouslySetInnerHTML可以帮助开发者在React元素中直接添加InnerHTML
                         __html: newsInfo.content
                     }} style={{
                         margin: "0 24px",
