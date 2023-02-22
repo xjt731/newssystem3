@@ -11,9 +11,15 @@ const { Header } = Layout;
 
 function TopHeader(props) {
   console.log(props)
-    const [collapsed, setCollapsed] = useState(false)
+  //自己不需要有这个状态，用collapsedReducer来的
+    /* const [collapsed, setCollapsed] = useState(false)
     const changeCollapsed = () => {
         setCollapsed(!collapsed)
+    } */
+
+    const changeCollapsed = ()=>{
+      //要求父组件dispatch mapDispatchToProps 里的action对象 {type: "changeCollapsed"} //CollApsedReducer里的action被执行
+      props.changeCollapsed()
     }
 
     const {role:{roleName},username} = JSON.parse(localStorage.getItem("token"))
@@ -34,7 +40,7 @@ function TopHeader(props) {
     return (
         <Header className="site-layout-background" style={{ padding: '0 16px' }}>
             {
-                collapsed ? <MenuUnfoldOutlined onClick={changeCollapsed} /> : <MenuFoldOutlined onClick={changeCollapsed} />
+                props.isCollapsed ? <MenuUnfoldOutlined onClick={changeCollapsed} /> : <MenuFoldOutlined onClick={changeCollapsed} />
             }
 
             <div style={{ float: "right" }}>
@@ -47,15 +53,26 @@ function TopHeader(props) {
 
     )
 }
-const mapStateToProps = ({CollApsedReducer:{isCollapsed}})=>{ //（state：解构state）
-  //把状态映射成属性
+const mapStateToProps = ({CollApsedReducer:{isCollapsed}})=>{ //（state：解构state） //state 输出：{CollApsedReducer: {…}}: CollApsedReducer: {isCollapsed: true}
+  //把prevState状态从CollApsedReducer映射成属性
   //console.log(state)  //{CollApsedReducer: {…}}: CollApsedReducer: {isCollapsed: true}
   return {
     a:1, // function TopHeader(props){console.log(props)} 会有一个a属性{a:1}
     isCollapsed //拿到父组件的值
   }
 }
-export default connect(mapStateToProps)(withRouter(TopHeader))
+
+const mapDispatchToProps = {
+  // 此时props多了一个 changeCollapsed: ƒ () 属性
+  changeCollapsed(){ //dispatch一个action对象
+      return {
+          type: "changeCollapsed"
+          // payload:
+      }//action 
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(TopHeader))
 /*
   connect(
    // mapStateToProps  
