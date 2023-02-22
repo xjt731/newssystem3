@@ -16,12 +16,14 @@ import {
 import { withRouter } from 'react-router-dom';
 import axios from 'axios'
 import { Layout, Menu, theme } from 'antd';
+import {connect} from 'react-redux'
 const { Header, Sider, Content } = Layout;
 
 
 
 
 function SideMenu(props) {
+  console.log(props)
   const [menu, setMenu] = useState([])
   //第一次渲染画面
   useEffect(() => {
@@ -72,7 +74,7 @@ function SideMenu(props) {
   const selectKeys = [props.location.pathname]
 
   return (
-    <Sider trigger={null} collapsible collapsed={true}>
+    <Sider trigger={null} collapsible collapsed={props.isCollapsed}>
       <div className="logo" />
       <Menu
         theme="dark"
@@ -87,4 +89,11 @@ function SideMenu(props) {
   )
 }
 
-export default withRouter(SideMenu)
+const mapStateToProps = ({CollApsedReducer:{isCollapsed}})=>{ 
+  return {
+    a:1, // function TopHeader(props){console.log(props)} 会有一个a属性{a:1}
+    isCollapsed //拿到父组件的值
+  }
+}
+
+export default connect(mapStateToProps)(withRouter(SideMenu))
