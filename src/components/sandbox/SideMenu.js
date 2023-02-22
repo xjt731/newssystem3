@@ -73,7 +73,7 @@ function SideMenu(props) {
 
   const selectKeys = [props.location.pathname]
 
-  return (
+  return (                                     
     <Sider trigger={null} collapsible collapsed={props.isCollapsed}>
       <div className="logo" />
       <Menu
@@ -91,7 +91,7 @@ function SideMenu(props) {
 
 const mapStateToProps = ({CollApsedReducer:{isCollapsed}})=>{ 
   return {
-    a:1, // function TopHeader(props){console.log(props)} 会有一个a属性{a:1}
+    a:1, 
     isCollapsed //拿到父组件的值
   }
 }
